@@ -14,26 +14,27 @@ import { ActivePlans } from "./pages/activePlans";
 import NewPlan from './pages/newPlan';
 import JoinPlan from './pages/joinPlan';
 
-
-
-
-
-
 import { Navbar } from "./component/navbar";
 import { Footer } from "./component/footer";
 
-
-//create your first component
+// Create your first component
 const Layout = () => {
-    //the basename is used when your project is published in a subdirectory and not in the root of the domain
-    // you can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
+    // The basename is used when your project is published in a subdirectory and not in the root of the domain
+    // You can set the basename on the .env file located at the root of this project, E.g: BASENAME=/react-hello-webapp/
     const basename = process.env.BASENAME || "";
 
+    // Check if the backend URL is set
     if (!process.env.BACKEND_URL || process.env.BACKEND_URL == "") return <BackendURL />;
+
+    // State to manage the token
     const [token, setToken] = useState(localStorage.getItem("token"));
+
+    // Effect to update the token when localStorage changes
     useEffect(() => {
         const updateToken = () => {
-            setToken(localStorage.getItem("token"));
+            const newToken = localStorage.getItem("token");
+            console.log("Token updated:", newToken); // Depuración
+            setToken(newToken);
         };
 
         window.addEventListener("storage", updateToken);
@@ -41,109 +42,39 @@ const Layout = () => {
         return () => {
             window.removeEventListener("storage", updateToken);
         };
-    }, [localStorage.getItem("token")]);
+    }, []);
 
-    if (localStorage.getItem("token")) {
-
-        const planData = {
-            name: "Visit to the Museum",
-            numberOfPeople: 5,
-            date: "2025-02-15",
-            startTime: "10:00",
-            endTime: "13:00",
-            location: "Museum of Modern Art",
-            category: "Art",
-            description: "Join us for a cultural experience at the museum.",
-            image: "https://cdn-museabrugge-be.cloud.glue.be/https%3A%2F%2Fwww.museabrugge.be%2Fvolumes%2Fgeneral%2FBezoek-het-Groeningemuseum_Musea-Brugge.jpg?dpr=2&w=1440&h=590&fit=crop&s=3c676338b7222eaf5b274e130e09698e",
-            locationCoordinates: { lat: 40.4168, lng: -3.7038 },
-        };
- 66-flujo-de-sign-up-y-login
-
-
-        return (
-            <div>
-                <BrowserRouter basename={basename}>
-                    <ScrollToTop>
-                        <Navbar />
-                        <Routes>
-                            <Route element={<Home />} path="/" />
-                            <Route element={<Profile />} path="/profile" />
-                            <Route path="/plans-history" element={<PlansHistory />} />
-                            <Route path="/active-plans" element={<ActivePlans />} />
-                            <Route path="/new-plan" element={<NewPlan />} />
-                            <Route path="/join-plan" element={<JoinPlan />} />
-                            <Route element={<Demo />} path="/demo" />
-                            <Route element={<Single />} path="/single/:theid" />
-                            <Route element={<h1>Not found!</h1>} />
-                        </Routes>
-                        <Footer />
-                    </ScrollToTop>
-                </BrowserRouter>
-            </div>
-        );
-    } else {
-
-        
-        
+    // Render the layout based on whether the user is logged in (has a token)
     return (
         <div>
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
                     <Navbar />
                     <Routes>
+                        {/* Common routes for all users */}
                         <Route element={<Home />} path="/" />
-                        <Route element={<LogedHome />} path="/loged-home" />
-                        <Route element={<Profile />} path="/profile" /> 
-                        <Route path="/plans-history" element={<PlansHistory />} />
-                        <Route path="/active-plans" element={<ActivePlans />} />
-                        <Route path="/new-plan" element={<NewPlan />} />
-                        <Route path="/join-plan" element={<JoinPlan />} />
                         <Route element={<Demo />} path="/demo" />
                         <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<h1>Not found!</h1>} />
+                        <Route path="/new-plan" element={<NewPlan />} />
+                        <Route element={<Profile />} path="/profile" />
+                        <Route path="*" element={<h1>Not found!</h1>} />
+
+                        {/* Routes for logged-in users */}
+                        {token && (
+                            <>
+                                <Route element={<LogedHome />} path="/loged-home" />
+                                
+                                <Route path="/plans-history" element={<PlansHistory />} />
+                                <Route path="/active-plans" element={<ActivePlans />} />
+                                <Route path="/join-plan" element={<JoinPlan />} />
+                            </>
+                        )}
                     </Routes>
                     <Footer />
                 </ScrollToTop>
             </BrowserRouter>
         </div>
     );
-    }else{
- development
-        return (
-            <div>
-                <BrowserRouter basename={basename}>
-                    <ScrollToTop>
-                        <Routes>
- 66-flujo-de-sign-up-y-login
-                            <Route element={<Home />} path="/" />
-                            <Route element={<Profile />} path="/profile" />
-                            <Route path="/plans-history" element={<PlansHistory />} />
-                            <Route path="/active-plans" element={<ActivePlans />} />
-                            <Route path="/new-plan" element={<NewPlan />} />
-                            <Route path="/join-plan" element={<JoinPlan />} />
-                            <Route element={<Demo />} path="/demo" />
-                            <Route element={<Single />} path="/single/:theid" />
-                            <Route element={<h1>Not found!</h1>} />
-
-
-                        <Route element={<Home />} path="/" />
-                        <Route element={<LogedHome />} path="/loged-home" />
-                        <Route element={<Profile />} path="/profile" /> 
-                        <Route path="/plans-history" element={<PlansHistory />} />
-                        <Route path="/active-plans" element={<ActivePlans />} />
-                        <Route path="/new-plan" element={<NewPlan />} />
-                        <Route path="/join-plan" element={<JoinPlan />} />
-                        <Route element={<Demo />} path="/demo" />
-                        <Route element={<Single />} path="/single/:theid" />
-                        <Route element={<h1>Not found!</h1>} />
- development
-                        </Routes>
-                        <Footer />
-                    </ScrollToTop>
-                </BrowserRouter>
-            </div>
-        );
-    }
 };
 
 export default injectContext(Layout);

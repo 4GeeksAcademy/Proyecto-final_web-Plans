@@ -11,7 +11,6 @@ import { Link, useNavigate } from "react-router-dom";
 import ReviewCards from "../component/reviewCard";
 
 export const Home = () => {
- 66-flujo-de-sign-up-y-login
   const { store, actions } = useContext(Context);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -75,17 +74,6 @@ export const Home = () => {
   return (
     <div className="container justify-content-center mt-5">
       <div className="first-box row text-center rounded position-relative">
-        <div className="top-right-elements d-flex justify-content-end w-100 p-2">
-          {!isLoggedIn ? (
-            <>
-              <button className="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
-              <button className="register-button btn btn-secondary" data-bs-toggle="modal" data-bs-target="#registroModal">Sign up</button>
-            </>
-          ) : (
-            <button className="btn btn-secondary">Logged In</button>
-          )}
-        </div>
-
         <div className="first-picture rounded">
           <img className="logo-letras" src={logoLetras} alt="Website Logo" />
           <br />
@@ -355,5 +343,4 @@ export const Home = () => {
 			</p>
 		</div>
 	);
- development
 };

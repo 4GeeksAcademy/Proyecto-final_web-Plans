@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pytz import timezone
 from flask import Flask, request, jsonify, url_for, send_from_directory, render_template
 from flask_migrate import Migrate
@@ -45,6 +45,7 @@ mail = Mail(app)
 app.url_map.strict_slashes = False
 
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT-KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=7)
 jwt = JWTManager(app)
 
 bcrypt = Bcrypt(app)
@@ -116,7 +117,6 @@ def register():
     new_user.name = body['name']
     db.session.add(new_user)
     db.session.commit()
- 66-flujo-de-sign-up-y-login
     access_token = create_access_token(identity=new_user.email)
     return jsonify({'msg': 'Nuevo usuario creado con éxito', 'token': access_token}), 201
 
@@ -131,7 +131,6 @@ def register():
     msg.html = html_content
     mail.send(msg)
     return jsonify({'msg': 'Nuevo usuario creado con éxito y correo de bienvenida enviado'}), 200
- development
 
 @app.route('/login', methods=['POST'])
 def login():

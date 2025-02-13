@@ -7,7 +7,7 @@ import "../../styles/profile.css";
 export const Profile = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
-  const location = useLocation(); 
+  const location = useLocation();
 
   const [profileImage, setProfileImage] = useState("https://cdn3.iconfinder.com/data/icons/avatars-9/145/Avatar_Dog-512.png");
   const [backgroundImage, setBackgroundImage] = useState("https://plus.unsplash.com/premium_photo-1685082778336-282f52a3a923?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Zm9uZG8lMjBkZSUyMHBhbnRhbGxhJTIwZGElMjBjb2xvcmVzfGVufDB8fDB8fHww");
@@ -16,44 +16,57 @@ export const Profile = () => {
   const backgroundFileInputRef = useRef(null);
 
   const handleProfileImageChange = (event) => {
-    const archivo = event.target.files[0];
-    if (archivo) {
+    const file = event.target.files[0];
+    if (file) {
       const reader = new FileReader();
-      reader.onload = function (e) {
-        setProfileImage(e.target.result);
-      };
-      reader.readAsDataURL(archivo);
+      reader.onload = (e) => setProfileImage(e.target.result);
+      reader.readAsDataURL(file);
     }
   };
 
   const handleBackgroundImageChange = (event) => {
-    const archivo = event.target.files[0];
-    if (archivo) {
+    const file = event.target.files[0];
+    if (file) {
       const reader = new FileReader();
-      reader.onload = function (e) {
-        setBackgroundImage(e.target.result);
-      };
-      reader.readAsDataURL(archivo);
+      reader.onload = (e) => setBackgroundImage(e.target.result);
+      reader.readAsDataURL(file);
     }
-  };
-
-  useEffect(() => {
-    console.log("Profile component mounted");
-    document.title = "Profile";
-  }, []);
-
-  const handleProfileButtonClick = () => {
-    profileFileInputRef.current.click();
   };
 
   const handleBackgroundButtonClick = () => {
     backgroundFileInputRef.current.click();
   };
 
+  const handleProfileButtonClick = () => {
+    profileFileInputRef.current.click();
+  };
+
+  const handleAccountClick = () => {
+    navigate("/profile");
+  };
+
+  const handleActivePlansClick = () => {
+    navigate("/active-plans");
+  };
+
+  const handleHistoryClick = () => {
+    navigate("/plans-history");
+  };
+
+  useEffect(() => {
+    console.log("Profile component mounted");
+    document.title = "Profile";
+
+    const token = store.token || localStorage.getItem('token');
+    if (!token) {
+      console.log("No token found, redirecting to login...");
+      navigate('/');
+    }
+  }, [store.token, navigate]);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    password: "",
     phone: "",
     address: "",
     dob: "",
@@ -64,7 +77,6 @@ export const Profile = () => {
   const [isEditing, setIsEditing] = useState({
     name: false,
     email: false,
-    password: false,
     phone: false,
     address: false,
     dob: false,
@@ -73,7 +85,6 @@ export const Profile = () => {
   });
 
   useEffect(() => {
-    
     if (store.user) {
       setFormData({
         name: store.user.name,
@@ -86,7 +97,6 @@ export const Profile = () => {
       });
     } else {
       const storedUser = JSON.parse(localStorage.getItem("user"));
-      console.log("User data from store: ", store.user);
       if (storedUser) {
         setFormData({
           name: storedUser.name,
@@ -116,37 +126,12 @@ export const Profile = () => {
     }));
   };
 
-  const handleHistoryClick = () => {
-    navigate("/plans-history");
-  };
-
-  const handleActivePlansClick = () => {
-    navigate("/active-plans");
-  };
-
-  const handleAccountClick = () => {
-    if (location.pathname !== "/profile") {
-      navigate("/profile");
-    }
-  };
-
-  
-  useEffect(() => {
-    
-    const token = store.token || localStorage.getItem('token');
-    if (!token) {
-      console.log("No token found, redirecting to login...");
-      navigate('/'); 
-    } else {
-      console.log("Token encontrado en Profile:", token);
-      
-    }
-  }, [store.token, navigate]);
-
   const handleSaveChanges = () => {
-    
+    if (!formData.name || !formData.email) {
+      alert("Name and email are required.");
+      return;
+    }
     actions.saveProfile(formData);
-    
     navigate("/home");
   };
 
@@ -440,10 +425,11 @@ export const Profile = () => {
               </span>
             </div>
           </div>
-
         </form>
       </div>
-      <button type="submit" className="btnProfile w-100 mt-3"  onClick={handleSaveChanges}>Save Changes</button>
+      <button type="submit" className="btnProfile w-100 mt-3" onClick={handleSaveChanges}>
+        Save Changes
+      </button>
     </div>
   );
 };
